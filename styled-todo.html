@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>待辦事項清單</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, "Microsoft JhengHei", sans-serif;
+            background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #fda085;
+            box-shadow: 0 0 0 3px rgba(253, 160, 133, 0.2);
+        }
+
+        .add-btn {
+            padding: 12px 25px;
+            background: #fda085;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn:hover {
+            background: #f6d365;
+            transform: translateY(-2px);
+        }
+
+        #todoList {
+            list-style: none;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .todo-item:hover {
+            transform: translateX(5px);
+            background: #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .checkbox-wrapper {
+            position: relative;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            border: 2px solid #fda085;
+            appearance: none;
+            -webkit-appearance: none;
+            transition: all 0.3s ease;
+        }
+
+        input[type="checkbox"]:checked {
+            background-color: #fda085;
+            border-color: #fda085;
+        }
+
+        input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            left: 5px;
+            top: 1px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .todo-text {
+            flex: 1;
+            font-size: 16px;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            color: #adb5bd;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #dee2e6;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .input-container {
+                flex-direction: column;
+            }
+
+            .add-btn {
+                width: 100%;
+            }
+        }
+
+        /* 添加動畫效果 */
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✨ 待辦事項清單</h1>
+        
+        <div class="input-container">
+            <input type="text" id="todoInput" placeholder="新增待辦事項...">
+            <button class="add-btn" onclick="addTodo()">新增</button>
+        </div>
+
+        <ul id="todoList"></ul>
+    </div>
+
+    <script>
+        function addTodo() {
+            var input = document.getElementById("todoInput");
+            var text = input.value.trim();
+            
+            if(text === '') {
+                input.style.borderColor = '#ff6b6b';
+                setTimeout(() => {
+                    input.style.borderColor = '#e9ecef';
+                }, 1000);
+                return;
+            }
+            
+            var li = document.createElement("li");
+            li.className = "todo-item slide-in";
+            
+            var checkbox = document.createElement("div");
+            checkbox.className = "checkbox-wrapper";
+            var checkInput = document.createElement("input");
+            checkInput.type = "checkbox";
+            checkbox.appendChild(checkInput);
+            
+            var todoText = document.createElement("span");
+            todoText.className = "todo-text";
+            todoText.textContent = text;
+            
+            var deleteBtn = document.createElement("button");
+            deleteBtn.className = "delete-btn";
+            deleteBtn.innerHTML = "×";
+            
+            checkInput.onchange = function() {
+                todoText.classList.toggle("completed");
+                li.style.background = this.checked ? '#f8f9fa' : '#fff';
+            };
+            
+            deleteBtn.onclick = function() {
+                li.style.transform = 'translateX(100%)';
+                li.style.opacity = '0';
+                setTimeout(() => {
+                    li.remove();
+                }, 300);
+            };
+            
+            li.appendChild(checkbox);
+            li.appendChild(todoText);
+            li.appendChild(deleteBtn);
+            
+            document.getElementById("todoList").appendChild(li);
+            input.value = '';
+        }
+
+        document.getElementById("todoInput").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") {
+                addTodo();
+            }
+        });
+
+        // 移除輸入框的錯誤狀態
+        document.getElementById("todoInput").addEventListener("input", function() {
+            this.style.borderColor = '#e9ecef';
+        });
+    </script>
+</body>
+</html>
